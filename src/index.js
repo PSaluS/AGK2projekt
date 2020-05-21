@@ -39,6 +39,7 @@ function render() {
 
 function rooms() {
     const roomsFloorC = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
+    const roomsWallC = new THREE.MeshBasicMaterial({ color: 0x666666 });
     const portalsC = new THREE.MeshBasicMaterial({color: 0x00ff00});
     const portalsGeometry = new THREE.BoxGeometry(2,5,1);
     
@@ -46,19 +47,55 @@ function rooms() {
     const portal1 = new THREE.Mesh(portalsGeometry, portalsC);
     scene.add(portal1);
     portal1.position.z=-10;
-
+    
     //room1
     if(true) {
-    const room1FloorG = new THREE.PlaneGeometry(20, 20);
-    const room1Floor = new THREE.Mesh(room1FloorG,roomsFloorC);
-    scene.add(room1Floor);
-    room1Floor.rotation.x=-Math.PI / 2;
+      const room1FloorG = new THREE.PlaneGeometry(20, 20);
+      const room1Floor = new THREE.Mesh(room1FloorG,roomsFloorC);
+      scene.add(room1Floor);
+      room1Floor.rotation.x=-Math.PI / 2;
+
+      const room1wallG1 = new THREE.BoxGeometry(1,5,20);
+      const room1wallG2 = new THREE.BoxGeometry(1,5,9);
+
+      const room1Wall1 = new THREE.Mesh(room1wallG1, roomsWallC);
+      const room1Wall2 = new THREE.Mesh(room1wallG1, roomsWallC);
+      const room1Wall3 = new THREE.Mesh(room1wallG1, roomsWallC);
+      const room1Wall4 = new THREE.Mesh(room1wallG2, roomsWallC);
+      const room1Wall5 = new THREE.Mesh(room1wallG2, roomsWallC);
+
+      scene.add(room1Wall1);
+      scene.add(room1Wall2);
+      scene.add(room1Wall3);
+      scene.add(room1Wall4);
+      scene.add(room1Wall5);
+
+      room1Wall1.position.x = 10;
+      room1Wall2.position.x = -10;
+      room1Wall3.position.z = 10;
+      room1Wall3.rotation.y = Math.PI / 2
+      room1Wall4.position.z = -10;
+      room1Wall4.position.x = 5;
+      room1Wall4.rotation.y = Math.PI / 2
+      room1Wall5.position.z = -10;
+      room1Wall5.position.x = -5;
+      room1Wall5.rotation.y = Math.PI / 2
+
+    }
+    //room2
+    if(true) {
+      const room2FloorG = new THREE.PlaneGeometry(40, 20);
+      const room2Floor = new THREE.Mesh(room2FloorG,roomsFloorC);
+      scene.add(room2Floor);
+      room2Floor.rotation.x=-Math.PI / 2;
+      room2Floor.position.z=-20;
     }
     }
 
     function keyPutDown (event) {
         const keyCode = event.which;
         const arrDash = 0.1;
+        const arrRot =  (Math.PI / 2) * 0.05;
         switch (keyCode) {
           case(68):
           player.position.x += arrDash;
@@ -71,6 +108,12 @@ function rooms() {
           break;
           case(83):
           player.position.z += arrDash;
+          break;
+          case(81):
+          player.rotation.y += arrRot;
+          break;
+          case(69):
+          player.rotation.y += (-arrRot);
           break;
         }
         }
