@@ -1,0 +1,6 @@
+Sterowanie: 
+
+Rzeczywista kamerą można sterować za pomocą myszy
+
+Poruszanie kamerą wirtualną i obserwatorem za pomocą klawiszy W S A D,
+Obracanie obserwatora i wirtualnej kamery kalwisze Q E.
