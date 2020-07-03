@@ -1,9 +1,15 @@
-#root{
-width: 800px;
-height: 600px;
-background-color: white;
-border: 3px solid #00b7ff;
-}
-*{
+body{
     background-color: #5c5c5c;
+    display: flex;
+}
+.roots{
+    background-color: black;
+    width: 800px;
+    height: 700px;
+    background-color: white;
+    border: 3px solid #00b7ff;
+    }
+#fpsC{
+    position: absolute;
+    z-index: 10;
 }

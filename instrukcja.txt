@@ -1,6 +1,11 @@
 Sterowanie: 
 
-Rzeczywista kamerą można sterować za pomocą myszy
+Rzeczywista kamerą (z lewej) można sterować za pomocą myszy.
 
-Poruszanie kamerą wirtualną i obserwatorem za pomocą klawiszy W S A D,
-Obracanie obserwatora i wirtualnej kamery kalwisze Q E.
+Poruszanie kamerą wirtualną, podglądową (z prawej) i obserwatorem za pomocą klawiszy W S A D,
+Obracanie obserwatora kamery wirtualnej i podlądowej kalwisze Q E.
+
+W górnym lewym rogu zanjduje się licznik klatek na sekundę (FPS),
+który umożliwia zaobserwowanie różnicy wydajności podczas renderowania kolejnych pomieszcezń.
+W pokoju nr. 3 (dalej po prawej ze strony startu) znajduje się bardzo skomplikowany obiekt, na którym można łatwo zobaczyć
+różnice wydajności kiedy jest ręderowany a kiedy dzięki systemowi portali jego renderowanie jest pomijane.

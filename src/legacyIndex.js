@@ -1,12 +1,9 @@
 import * as THREE from "three";
 import { OrbitControls } from "three/examples/jsm/controls/OrbitControls"
-import Stats from "stats.js";
 import './style.scss';
 
 let range = 15;
 let angle = 45;
-let portalVisibility = 1;
-const stats = new Stats();
 const root = document.getElementById("root");
 const root2 = document.getElementById("root2");
 const scene = new THREE.Scene();
@@ -22,9 +19,11 @@ const camera2 = new THREE.PerspectiveCamera(
   1,
   0.1,
   range
-);
+)
 
 let pp = ['room', true, false, false, false, false];
+// let visibleScreen;
+let log = false;
 
   function playerCreate() {
   const playerGeometry = new THREE.CylinderGeometry( 0.5, 0.5, 5, 64 );
@@ -40,6 +39,7 @@ let pp = ['room', true, false, false, false, false];
 
   function virtualCameraCreate() {
     let vCameraGeometry = new THREE.Geometry();
+    // let visibleScreenGeometry = new THREE.Geometry();
     let vCameraAngle = ((angle/2) * Math.PI)/180;
     let tgAngle = Math.tan(vCameraAngle);
     let del = tgAngle * range;
@@ -65,6 +65,12 @@ let pp = ['room', true, false, false, false, false];
       new THREE.Vector3( -del/2,0, -range-dash ),
       new THREE.Vector3( 0,del/2, -range-dash ),
     );
+    // visibleScreenGeometry.vertices.push(
+    //   new THREE.Vector3( del,del,-range-0.1 ),
+    //   new THREE.Vector3( -del,del,-range-0.1 ),
+    //   new THREE.Vector3( -del,-del,-range-0.1 ),
+    //   new THREE.Vector3( del,-del,-range-0.1 )
+    // )
     vCameraGeometry.faces.push( new THREE.Face3( 0, 1, 2 ) );
     vCameraGeometry.faces.push( new THREE.Face3( 0,2,3) );
     vCameraGeometry.faces.push( new THREE.Face3( 0, 3, 4 ) );
@@ -90,17 +96,63 @@ let pp = ['room', true, false, false, false, false];
     vCameraGeometry.faces.push( new THREE.Face3( 0, 5, 16 ) );
     vCameraGeometry.faces.push( new THREE.Face3( 0, 5, 17 ) );
 
+    // visibleScreenGeometry.faces.push( new THREE.Face3( 0, 2, 1 ) );
+    // visibleScreenGeometry.faces.push( new THREE.Face3( 0, 3, 2 ) );
+    // visibleScreenGeometry.faces.push( new THREE.Face3( 0, 1, 2 ) );
+    // visibleScreenGeometry.faces.push( new THREE.Face3( 0, 3, 3 ) );
+
+    // const vertex = [
+    //   0,0,0,
+    //   3,3,-5,
+    //   3,-3,-5,
+    //   -3,-3,-5,
+    //   -3,3,-5,
+    //   0,0,-5
+    // ]
+    // const indices = [
+    //   0,1,2,
+    //   0,2,3,
+    //   0,3,4,
+    //   0,4,1,
+    //   1,2,5,
+    //   2,3,5,
+    //   3,4,5,
+    //   4,1,5
+    // ]
+    // const vCameraGeometry = new THREE.Geometry( vertex, indices, 5, 2 );
+    //const vCameraGeometry = new THREE.ConeGeometry( visibleDist/2, visibleDist, 4 );
     const vCameraMaterial = new THREE.MeshBasicMaterial( {color: 0xff0000, wireframe: true} );
     const vCamera = new THREE.Mesh( vCameraGeometry, vCameraMaterial );
+    // visibleScreen = new THREE.Mesh( visibleScreenGeometry, vCameraMaterial );
     vCamera.position.y = 2.5;
+    // visibleScreen.position.y = 4;
     scene.add(vCamera);
+    // vCameraMaterial.opacity=0;
+    // vCameraMaterial.alphaTest=0.5;
+    // scene.add(visibleScreen);
     return vCamera;
   }
 
+//   function vCamUpdate() {
+//     let vCameraAngle = (angle * Math.PI)/180;
+//     let tgAngle = Math.tan(vCameraAngle);
+//     let del = tgAngle * range;
+//     // vCameraGeometry.vertices.push(
+//     //   new THREE.Vector3( 0,0,0 ),
+//     //   new THREE.Vector3( del,del, -range ),
+//     //   new THREE.Vector3(  del,-del, -range ),
+//     //   new THREE.Vector3( -del,-del, -range ),
+//     //   new THREE.Vector3( -del,del, -range ),
+//     //   new THREE.Vector3(  0,0, -range ),
+//     //   new THREE.Vector3( del,0, -range ),
+//     //   new THREE.Vector3(  0,-del, -range ),
+//     //   new THREE.Vector3( -del,0, -range ),
+//     //   new THREE.Vector3( 0,del, -range )
+    // );
   const player = playerCreate();
-  const vCamera = virtualCameraCreate();
-  const renderer = new THREE.WebGLRenderer();
-
+  const vCamera =virtualCameraCreate();
+const renderer = new THREE.WebGLRenderer();
+// const renderer2 = new THREE.WebGLRenderer();
 function light() {
     var AmbientLight = new THREE.AmbientLight(0xffffff, 0.4);
     var DirectionalLight = new THREE.DirectionalLight(0xffffff, 0.9);
@@ -115,6 +167,7 @@ function render() {
   camera2.aspect=root2.offsetWidth/root2.offsetWidth;
   camera.updateProjectionMatrix();
   camera2.updateProjectionMatrix();
+  //camera2.applyMatrix4(vCamera.matrix);
 
   renderer.setViewport( 0, 0, root.offsetWidth+root2.offsetWidth, root.offsetHeight );
   renderer.clear();
@@ -124,23 +177,24 @@ function render() {
 
   renderer.setViewport(root.offsetWidth+5,1,root2.offsetWidth, root2.offsetWidth)
   renderer.render(scene, camera2);
-
+    // renderer2.render(scene, camera2);
+    // camera2.lookAt(vCamera.geometry.vertices[5]);
     let relativeCameraOffset = new THREE.Vector3(0,4,0);
-    let cameraOffset = relativeCameraOffset.applyMatrix4( vCamera.matrixWorld );
 
+    let cameraOffset = relativeCameraOffset.applyMatrix4( vCamera.matrixWorld );
+    
     camera2.position.x = cameraOffset.x;
     camera2.position.y = 2.5
     camera2.position.z = cameraOffset.z;
 
     camera2.lookAt(vCamera.geometry.vertices[5].clone().applyMatrix4(vCamera.matrix));
+
     };
 
 function animate() {
-  stats.begin();
+  requestAnimationFrame(animate);
   rooms();
   render();
-  stats.end();
-  requestAnimationFrame(animate);
 }
 
 function rooms() {
@@ -152,13 +206,7 @@ function rooms() {
     playerHere();
     const roomsFloorC = new THREE.MeshBasicMaterial({ color: 0xaaaaaa });
     const roomsWallC = new THREE.MeshBasicMaterial({ color: 0x666666 });
-    let portalsC;
-    if(portalVisibility == 1) portalsC = new THREE.MeshBasicMaterial({color: 0x00ff00});
-    if(portalVisibility == 2) portalsC = new THREE.MeshBasicMaterial({color: 0x00ff00, wireframe: true});
-    if(portalVisibility == 3) {
-      portalsC = new THREE.MeshBasicMaterial({color: 0x00ff00, opacity: 0})
-      portalsC.alphaTest = 0.5
-    };
+    const portalsC = new THREE.MeshBasicMaterial({color: 0x00ff00});
     const portalsGeometry = new THREE.BoxGeometry(3,5,1,20,20,20);
     const room1FloorG = new THREE.PlaneGeometry(20, 20);
 
@@ -168,10 +216,15 @@ function rooms() {
     const portal4 = new THREE.Mesh(portalsGeometry, portalsC);
 
     //portal 1
+    // portal1.position.z = -10;
+    // portal1.position.y = 2.5;
     portal1.position.set(0,2.5,-10);
     scene.add(portal1);
 
     //portal2
+    // portal2.position.z = -30;
+    // portal2.position.x = 10;
+    // portal2.position.y = 2.5;
     portal2.position.set(10,2.5,-30);
     scene.add(portal2);
 
@@ -186,6 +239,9 @@ function rooms() {
     portal4.position.x = -10;
     portal4.position.y = 2.5;
     scene.add(portal4);
+
+  
+
 
     //room1
     if(check(portal1)|| pp[1]) {
@@ -331,14 +387,6 @@ function rooms() {
       scene.add(room3Wall4);
       scene.add(room3Wall5);
 
-      //Test
-
-      const testGeometry = new THREE.TorusKnotBufferGeometry( 3, 1, 1000, 1000 );;
-      const testMaterial = new  THREE.MeshPhongMaterial({color: 0xaa0000, wireframe: true, morphTargets: true});
-      const testMesh = new THREE.Mesh( testGeometry, testMaterial );
-      scene.add(testMesh);
-      testMesh.position.z = -40;
-      testMesh.position.x = 10;
     }
 
     //room4
@@ -426,61 +474,200 @@ function rooms() {
           player.position.x += arrDash;
           camera.position.x += arrDash;
           vCamera.position.x += arrDash;
+          // visibleScreen.position.x += arrDash;
           break;
           case(65):
           player.position.x += (-arrDash);
           camera.position.x += (-arrDash);
           vCamera.position.x += (-arrDash);
+          // visibleScreen.position.x += (-arrDash);
           break;
           case(87):
           player.position.z += (-arrDash);
           camera.position.z += (-arrDash);
           vCamera.position.z += (-arrDash);
+          // visibleScreen.position.z += (-arrDash);
           break;
           case(83):
           player.position.z += arrDash;
           camera.position.z += arrDash;
           vCamera.position.z += arrDash;
+          // visibleScreen.position.z += arrDash;
           break;
           case(81):
           player.rotation.y += arrRot;
           vCamera.rotation.y += arrRot;
+          // visibleScreen.rotation.y += arrRot;
           break;
           case(69):
           player.rotation.y += (-arrRot);
           vCamera.rotation.y += (-arrRot);
+          // visibleScreen.rotation.y += (-arrRot);
           break;
-          case(49):
-          portalVisibility=1;
+          // case(49):
+          // if(angle<60)  {angle+=1;
+          // vCamUpdate();}
+          // break;
+          // case(50):
+          // if(angle<1)  {angle-=1;
+          // vCamUpdate();}
+          // break;
+          // case(51):
+          // if(range<10) {range+=0.2;
+          // vCamUpdate();}
+          // break;
+          // case(52):
+          // if(range>1) {range-=0.2;
+          // vCamUpdate();}
+          // break;
+          case(84):
+          log = true;
           break;
-          case(50):
-          portalVisibility=2;
-          break;
-          case(51):
-          portalVisibility=3;
-          break;
+
         }
         }
 
 function check(portal) {
 
   let originPoint = portal.position.clone();
+  //originPoint.z+=5;
+  //originPoint.y=4;
+  // console.log(portal);
   for (let i = 0; i < portal.geometry.vertices.length; i++)
 	{
     let localVertex = portal.geometry.vertices[i].clone();
+    // console.log(localVertex);
+    //let globalVertex = localVertex.applyMatrix4( portal.matrix );
+    // console.log(globalVertex);
+    //let directionVector = localVertex.add(portal.position);
+    
+    // console.log(directionVector);
+    if(log) {
+            console.log(vCamera);
+            console.log(originPoint);
+            let localVertex2 = vCamera.geometry.vertices[i+1].clone();
+            console.log(localVertex2);
+            let globalVertex = localVertex2;
+            globalVertex.applyMatrix4(vCamera.matrix.clone());
+            console.log(globalVertex);
+            let directionVector = globalVertex;
+            directionVector = directionVector.sub(vCamera.position.clone());
+            console.log(directionVector);
+            // if(collisionResults[0]) console.log(collisionResults[0].distance)
+          log = false;}
 
     let ray = new THREE.Raycaster( originPoint, localVertex.clone().normalize());
+    // console.log(originPoint)
+    // console.log(localVertex)
     let collisionResults = ray.intersectObject(vCamera);
 		if ( collisionResults.length > 0 && collisionResults[0].distance < localVertex.length() ) {
+      // console.log(true);
       return true;
     }
 	}
   return false;
 }
 
+// function check(portal) {
+
+//   let originPoint = vCamera.position.clone();
+//   //originPoint.z+=5;
+//   // console.log(portal);
+//   for (let i = 1; i < vCamera.geometry.vertices.length; i++)
+// 	{
+//     var localVertex = vCamera.geometry.vertices[i].clone();
+//     // console.log(localVertex);
+//     var globalVertex = localVertex.clone();
+//     globalVertex = globalVertex.applyMatrix4(vCamera.matrix);
+//     // console.log(globalVertex);
+//     var directionVector = globalVertex.clone();
+//     directionVector = directionVector.sub(vCamera.position);
+    
+//     // console.log(directionVector);
+
+//         if(log) {
+//           console.log(originPoint);
+//       console.log(localVertex);
+//       console.log(globalVertex);
+//       console.log(directionVector);
+//       // if(collisionResults[0]) console.log(collisionResults[0].distance)
+//     log = false;}
+
+//     let ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize());
+//     // console.log(originPoint)
+//     // console.log(localVertex)
+//     let collisionResults = ray.intersectObject(portal, true);
+// 		if ( collisionResults.length > 0 && collisionResults[0].distance < localVertex.length() ) {
+//       // console.log(true);
+//       return true;
+//     }
+// 	}
+//   return false;
+// }
+
+function findIndex(arr, obj) {
+
+  for(let i=0; i<arr.length; i++) {
+    if(arr[i].object == obj)  return i;
+  }
+  return -1;
+}
+
+
+// function check(portal) {
+
+//   let originPoint = player.position.clone();
+//   originPoint.y = 4;
+//   // console.log(portal);
+//   let globalPortal = portal.position.clone();
+//   let directionVector = globalPortal.sub(player.position);
+//   let ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize());
+//   let collResults = ray.intersectObjects([visibleScreen,portal], true);
+//   let rangee = globalPortal.clone();
+//   rangee.sub(originPoint);
+//   rangee = rangee.length;
+
+//   if ( collResults.length > 0 && findIndex(collResults, visibleScreen) != -1 && collResults[0].distance > rangee ) {
+//     return true;
+//   }
+//   for (let i = 0; i < portal.geometry.vertices.length; i++)
+// 	{
+//     let localVertex = portal.geometry.vertices[i].clone();
+//     // console.log(localVertex);
+//     //let globalVertex = localVertex.applyMatrix4( portal.matrix );
+//     let globalVertex = localVertex.add(portal.position);
+//     // console.log(globalVertex);
+//     directionVector = globalVertex.sub(player.position);
+
+//     // console.log(directionVector);
+
+//     ray = new THREE.Raycaster( originPoint, directionVector.clone().normalize());
+//     // console.log(originPoint)
+//     // console.log(localVertex)
+//     let collisionResults = ray.intersectObjects([visibleScreen,portal], true);
+//     rangee =  globalVertex.clone();
+//     rangee.sub(originPoint);
+//      rangee = rangee.length();
+//     if(log) {
+//       //console.log(collisionResults.indexOf(vCamera));
+//       console.log(rangee);
+//       if(collisionResults[0]) console.log(collisionResults[0].distance)
+//     log = false;}
+    
+//       // let collisionResultsObj = collisionResults.forEach(function(){return this.object});
+// 		if ( collisionResults.length > 0 && findIndex(collisionResults, visibleScreen) != -1 && collisionResults[0].distance > rangee ) {
+//       // console.log(true);
+//       return true;
+//     }
+// 	}
+//   return false;
+// }
+
 function playerHere(){
   let x = player.position.x;
   let z = player.position.z;
+  // console.log(x);
+  // console.log(z);
 
   if(x>-11&&x<11&&z<11&&z>-11)  pp[1] = true;
   else  pp[1]=false;
@@ -508,11 +695,11 @@ function init() {
       );
       renderer.setClearColor(0x000000, 1);
       root.appendChild(renderer.domElement);
+      // root2.appendChild(renderer.domElement);x
       let controls = new OrbitControls( camera, renderer.domElement );
       renderer.autoClear = false;
       light();
-      stats.showPanel(0);
-      document.body.appendChild(stats.dom);
+      console.log(scene);
 }
 root.onload = init();
 root.onload = animate();
