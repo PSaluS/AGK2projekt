@@ -159,7 +159,7 @@ function rooms() {
       portalsC = new THREE.MeshBasicMaterial({color: 0x00ff00, opacity: 0})
       portalsC.alphaTest = 0.5
     };
-    const portalsGeometry = new THREE.BoxGeometry(3,5,1,20,20,20);
+    const portalsGeometry = new THREE.BoxGeometry(3,5,0.01,20,20,20);
     const room1FloorG = new THREE.PlaneGeometry(20, 20);
 
     const portal1 = new THREE.Mesh(portalsGeometry, portalsC);

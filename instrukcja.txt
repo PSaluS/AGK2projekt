@@ -1,4 +1,4 @@
-Sterowanie: 
+Sterowanie:
 
 Rzeczywista kamerą (z lewej) można sterować za pomocą myszy.
 
